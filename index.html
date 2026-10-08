@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Adarsh Vipat — Photography</title>
+  <meta name="description" content="Photography by Adarsh Vipat: portraits, travel, street and events.">
+  <meta name="author" content="Adarsh Vipat">
+  <link rel="canonical" href="https://adarshvipat.github.io/">
+
+  <!-- Link previews (iMessage, Slack, LinkedIn, email). Image URLs must be absolute. -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Adarsh Vipat — Photography">
+  <meta property="og:description" content="Portraits, travel, street and events.">
+  <meta property="og:url" content="https://adarshvipat.github.io/">
+  <meta property="og:image" content="https://adarshvipat.github.io/photos/P3300670.jpg">
+  <meta property="og:image:width" content="2000">
+  <meta property="og:image:height" content="1500">
+  <meta property="og:image:alt" content="A lone coyote standing in a wide field of green grass">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Adarsh Vipat — Photography">
+  <meta name="twitter:description" content="Portraits, travel, street and events.">
+  <meta name="twitter:image" content="https://adarshvipat.github.io/photos/P3300670.jpg">
+
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23fff'/%3E%3Ctext x='32' y='47' font-family='Georgia,serif' font-size='44' text-anchor='middle' fill='%23000'%3EA%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+  <a class="skip-link" href="#about">Skip to about and contact</a>
+
+  <header class="masthead">
+    <div class="masthead__top">
+      <span>Portfolio</span>
+      <a href="#about">About &amp; Contact</a>
+    </div>
+    <h1 class="masthead__name">Adarsh Vipat</h1>
+    <p class="masthead__subtitle">Photography — Portraits, Travel, Street, Events</p>
+  </header>
+
+  <main>
+    <section id="gallery" class="gallery" aria-label="Photographs"></section>
+    <noscript><p class="noscript">Please enable JavaScript to view the photographs.</p></noscript>
+
+    <section id="about" class="about" aria-labelledby="about-heading">
+      <h2 id="about-heading" class="about__heading">About</h2>
+      <p class="about__bio">
+        Hi, my name is Adarsh and I like taking pictures.
+      </p>
+      <ul class="about__contact">
+        <li><span class="about__label">Email</span> <a href="mailto:ahvipat@gmail.com">ahvipat@gmail.com</a></li>
+        <li><span class="about__label">Instagram</span> <a href="https://www.instagram.com/adarshvipat/" rel="me noopener">@adarshvipat</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Adarsh Vipat</span>
+    <span>&copy; <span data-year>2026</span></span>
+  </footer>
+
+  <dialog id="lightbox" class="lightbox" aria-label="Photo viewer" tabindex="-1">
+    <div class="lightbox__stage">
+      <img class="lightbox__img" alt="">
+    </div>
+    <button type="button" class="lightbox__btn lightbox__close" aria-label="Close viewer">Close</button>
+    <button type="button" class="lightbox__btn lightbox__prev" aria-label="Previous photo"><span aria-hidden="true">‹</span></button>
+    <button type="button" class="lightbox__btn lightbox__next" aria-label="Next photo"><span aria-hidden="true">›</span></button>
+    <p class="lightbox__counter" aria-hidden="true"></p>
+    <p class="visually-hidden" aria-live="polite" data-status></p>
+  </dialog>
+
+  <script src="photos/sizes.js"></script>
+  <script src="photos.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

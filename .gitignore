@@ -1,0 +1,4 @@
+# Full-size originals stay on your computer; only /photos is published.
+originals/
+.DS_Store
+__pycache__/
