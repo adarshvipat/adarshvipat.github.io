@@ -4,6 +4,13 @@ Export web-optimized copies of your original photos.
 
     python3 scripts/optimize.py                 # originals/ -> photos/
     python3 scripts/optimize.py path/to/folder  # any folder -> photos/
+    python3 scripts/optimize.py path/to/folder winter-fest
+                                                # any folder -> photos/winter-fest/
+
+A subfolder of originals/ (e.g. originals/winter-fest/) is exported to the
+subfolder of photos/ with the same name (photos/winter-fest/), but only if
+that folder already exists. Other subfolders, like originals/unused/, are
+left alone.
 
 For every JPEG/PNG/TIFF/WebP image in the source folder it:
   * applies the camera's EXIF rotation, then strips all metadata
@@ -51,10 +58,10 @@ def export(src: Path, dest: Path) -> None:
 
 def write_sizes() -> None:
     sizes = {}
-    for f in sorted(OUT_DIR.iterdir()):
+    for f in sorted(OUT_DIR.rglob("*")):
         if f.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}:
             with Image.open(f) as im:
-                sizes[f.name] = list(im.size)
+                sizes[f.relative_to(OUT_DIR).as_posix()] = list(im.size)
     lines = [f"  {json.dumps(name)}: [{w}, {h}]" for name, (w, h) in sizes.items()]
     body = "{\n" + ",\n".join(lines) + "\n}"
     (OUT_DIR / "sizes.js").write_text(
@@ -64,23 +71,34 @@ def write_sizes() -> None:
     print(f"Wrote photos/sizes.js ({len(sizes)} photos)")
 
 
-def main() -> None:
-    src_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "originals"
-    if not src_dir.is_dir():
-        sys.exit(f"Source folder not found: {src_dir}")
-    OUT_DIR.mkdir(exist_ok=True)
-
+def optimize_folder(src_dir: Path, out_dir: Path) -> None:
+    out_dir.mkdir(exist_ok=True)
     files = sorted(p for p in src_dir.iterdir() if p.suffix.lower() in EXTENSIONS)
+    print(f"{src_dir.name}/ -> {out_dir.relative_to(ROOT)}/")
     if not files:
-        print(f"No images found in {src_dir}")
+        print("  (no images)")
     for src in files:
-        dest = OUT_DIR / (src.stem + ".jpg")
+        dest = out_dir / (src.stem + ".jpg")
         if dest.exists() and dest.stat().st_mtime >= src.stat().st_mtime:
             print(f"  skip  {dest.name} (up to date)")
             continue
         export(src, dest)
         kb = dest.stat().st_size / 1024
         print(f"  saved {dest.name}  {kb:,.0f} KB")
+
+
+def main() -> None:
+    src_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "originals"
+    if not src_dir.is_dir():
+        sys.exit(f"Source folder not found: {src_dir}")
+
+    if len(sys.argv) > 2:
+        optimize_folder(src_dir, OUT_DIR / sys.argv[2])
+    else:
+        optimize_folder(src_dir, OUT_DIR)
+        for sub in sorted(d for d in src_dir.iterdir() if d.is_dir()):
+            if (OUT_DIR / sub.name).is_dir():
+                optimize_folder(sub, OUT_DIR / sub.name)
 
     write_sizes()
 

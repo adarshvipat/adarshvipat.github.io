@@ -3,11 +3,15 @@
 A single-page portfolio in plain HTML, CSS, and JavaScript. There's no build step and nothing to install for the site itself.
 
 ```
-index.html        the page (name, bio, contact links, share-preview tags)
+index.html        the main page (name, bio, contact links, share-preview tags)
+india.html        event page: India 2026
+winter-fest.html  event page: Ski and Board Winter Fest 2026
+mock-shaadi.html  event page: PSO Mock Shaadi 2026
 style.css         all styling
 main.js           gallery, scroll fade-in, full-screen viewer
-photos.js         ← THE PHOTO LIST: order, alt text, full-bleed
+photos.js         ← THE PHOTO LIST: order, alt text, full-bleed, event pages
 photos/           web-sized photos (published)
+photos/india/, photos/winter-fest/, photos/mock-shaadi/   extra photos for each event page
 photos/sizes.js   generated pixel sizes; don't edit by hand
 originals/        full-size originals (git-ignored, never published)
 scripts/optimize.py
@@ -32,6 +36,25 @@ Your name, bio, email, and Instagram are in `index.html`. The site URL is `https
 - **Alt text** should say briefly what's in the picture, as if describing it to someone over the phone. Screen readers and search engines use it. It isn't shown on the page.
 
 > The optimizer always saves with a lowercase `.jpg` extension (so `P5267535.JPG` becomes `P5267535.jpg`). Use that name in `photos.js`. GitHub Pages is case-sensitive.
+
+## Event pages
+
+Under the India, snowboarding, and party photos on the main page is a caption that links to a page with more photos from that event. Each event page has a **Back** link at the top and bottom that returns to that spot on the main page.
+
+**To add photos to an event page:**
+
+1. Put the full-size originals in `originals/india/`, `originals/winter-fest/`, or `originals/mock-shaadi/`.
+2. Run `python3 scripts/optimize.py`. It exports them to `photos/winter-fest/` or `photos/mock-shaadi/`.
+
+That's all. The event page shows the photos listed for it in `window.EVENTS` at the bottom of `photos.js`, then every other photo in its folder in filename order. Portrait photos are paired side by side. Photos only show up once the script has listed them in `photos/sizes.js`, so run it even if you copy files straight into `photos/winter-fest/`.
+
+To give an added photo alt text or a layout (`fullBleed`, `beside`), add it to that event's list in `photos.js` with its folder name:
+
+```js
+{ file: "winter-fest/P2273976.jpg", alt: "A rider dropping into the halfpipe", fullBleed: true },
+```
+
+**To add a new event:** copy `winter-fest.html`, then change its `data-event`, title, date, and the `#winter-fest` in its Back links. Create `photos/<name>/` and `originals/<name>/`. Then add a `{ more: "<name>", caption: "…" }` line in `photos.js` under the photos it belongs with.
 
 ## Putting photos side by side
 
@@ -76,7 +99,7 @@ For each image the script:
 - resizes it to 2000px on the long edge
 - saves it as a progressive JPEG at quality 82
 
-Photos that are already up to date are skipped. Every run regenerates `photos/sizes.js`, which lets the page reserve each photo's space before it loads so nothing jumps around.
+Subfolders of `originals/` are exported to the `photos/` subfolder with the same name, but only if that folder already exists (e.g. `photos/winter-fest/`). Other folders, like `originals/unused/`, are ignored. Photos that are already up to date are skipped. Every run regenerates `photos/sizes.js`, which lets the page reserve each photo's space before it loads so nothing jumps around.
 
 If you skip the script and drop a file straight into `photos/`, the site still works. That photo just won't have its size reserved in advance.
 
@@ -97,7 +120,7 @@ The site is served at `https://adarshvipat.github.io` from a repository named **
 **Option A: website upload (no git needed)**
 
 1. On GitHub, click **New repository**. Name it `adarshvipat.github.io` , make it **Public**, and create it.
-2. Click **uploading an existing file**. Drag in `index.html`, `style.css`, `main.js`, `photos.js`, `.nojekyll`, `README.md`, and the whole `photos` folder. **Don't** upload `originals/`.
+2. Click **uploading an existing file**. Drag in `index.html`, `india.html`, `winter-fest.html`, `mock-shaadi.html`, `style.css`, `main.js`, `photos.js`, `.nojekyll`, `README.md`, and the whole `photos` folder. **Don't** upload `originals/`.
    - Finder hides dot-files. Press `Cmd+Shift+.` to show `.nojekyll`.
 3. Commit the upload.
 4. Go to **Settings → Pages**. Under *Build and deployment*, choose **Deploy from a branch**, then **main** and **/ (root)**, and save.

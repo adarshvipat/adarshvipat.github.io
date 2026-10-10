@@ -2,9 +2,31 @@
   "use strict";
 
   var PHOTO_DIR = "photos/";
-  var photos = window.PHOTOS || [];
   var sizes = window.PHOTO_SIZES || {};
   var gallery = document.getElementById("gallery");
+  var eventId = document.body.dataset.event;
+
+  // An event page lists its chosen photos, then everything else in its
+  // subfolder of /photos (known from photos/sizes.js), pairing portraits.
+  function eventEntries(id) {
+    var list = ((window.EVENTS || {})[id] || []).slice();
+    var listed = {};
+    list.forEach(function (p) { listed[p.file] = true; });
+    var heading = document.querySelector("h1");
+    var alt = "Photo from " + (heading ? heading.textContent.trim() : id);
+    var pairWithPrev = false;
+    Object.keys(sizes).sort().forEach(function (file) {
+      if (file.indexOf(id + "/") !== 0 || listed[file]) return;
+      var portrait = sizes[file][1] > sizes[file][0];
+      list.push({ file: file, alt: alt, beside: portrait && pairWithPrev });
+      pairWithPrev = portrait && !pairWithPrev;
+    });
+    return list;
+  }
+
+  // Entries are photos plus caption links ({ more, caption }) between them.
+  var entries = eventId ? eventEntries(eventId) : (window.PHOTOS || []);
+  var photos = entries.filter(function (e) { return e.file; });
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   // Pixel size of a photo, from photos/sizes.js (written by scripts/optimize.py).
@@ -17,6 +39,7 @@
 
   var row = null;
   var lastFigure = null;
+  var lastPhoto = null;
 
   // A photo marked `beside` joins the photo above it in a side-by-side row.
   function placeBeside(prevFigure, figure) {
@@ -36,7 +59,27 @@
     row.dataset.count = row.children.length;
   }
 
-  var figures = photos.map(function (photo, i) {
+  // A caption under the photos above it, linking to the event's page.
+  function addEventLink(entry) {
+    var link = document.createElement("a");
+    link.className = "event-link";
+    link.id = entry.more;
+    link.href = entry.more + ".html";
+
+    var title = document.createElement("span");
+    title.className = "event-link__title";
+    title.textContent = entry.caption;
+
+    var more = document.createElement("span");
+    more.className = "event-link__more";
+    more.textContent = "More photos \u2192";
+
+    link.appendChild(title);
+    link.appendChild(more);
+    gallery.appendChild(link);
+  }
+
+  function addPhoto(photo, i) {
     var size = sizeOf(photo);
     var figure = document.createElement("figure");
     figure.className = "photo" + (photo.fullBleed ? " photo--bleed" : "");
@@ -69,16 +112,33 @@
     button.appendChild(img);
     figure.appendChild(button);
 
-    var prev = photos[i - 1];
-    if (photo.beside && prev && !prev.fullBleed && !photo.fullBleed) {
+    if (photo.beside && lastPhoto && !lastPhoto.fullBleed && !photo.fullBleed) {
       placeBeside(lastFigure, figure);
     } else {
       row = null;
       gallery.appendChild(figure);
     }
     lastFigure = figure;
+    lastPhoto = photo;
     return figure;
+  }
+
+  var figures = [];
+  entries.forEach(function (entry) {
+    if (entry.file) {
+      figures.push(addPhoto(entry, figures.length));
+    } else if (entry.more) {
+      addEventLink(entry);
+      row = lastFigure = lastPhoto = null;
+    }
   });
+
+  // Coming back from an event page: the gallery didn't exist when the
+  // browser looked for the #anchor, so jump to it now.
+  if (location.hash.length > 1) {
+    var target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (target && gallery.contains(target)) target.scrollIntoView({ behavior: "instant", block: "center" });
+  }
 
   // ── Fade photos in as they scroll into view ─────────────────────────────
 
